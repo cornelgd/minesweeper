@@ -1,8 +1,9 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.nio.channels.ScatteringByteChannel;
 import java.util.Random;
 
 public class Main {
@@ -30,7 +31,7 @@ public class Main {
             };
             JTable desen = new JTable(model);
 
-
+            desen.setFont(new Font("Arial", Font.BOLD, 17));
             frameMeniu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frameMeniu.setSize(width, height);
             frameMeniu.setLayout(null);
@@ -44,13 +45,25 @@ public class Main {
             desen.setFocusable(false);
             desen.setRowSelectionAllowed(false);
             desen.setRowHeight(patratel);
+
+
             desen.setBounds(centerw, centerh, gridSize * 30, gridSize * 30);
             desen.setOpaque(true);
             desen.setVisible(true);
             desen.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+
+
+
+            DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+            center.setHorizontalAlignment(SwingConstants.CENTER);
+            desen.getColumnModel().getColumn(0).setCellRenderer(center);
+
+
             desen.setEnabled(false);
             for (int i = 0; i < desen.getColumnModel().getColumnCount(); i++) {
                 desen.getColumnModel().getColumn(i).setMaxWidth(patratel);
+                desen.getColumnModel().getColumn(i).setCellRenderer(center);
             }
 
 
@@ -83,7 +96,7 @@ public class Main {
 
                 cl = bombeA[i] % gridSize-1;
                 if (cl <0)  cl=0;
-                System.out.println("rw"+rw+"-cl"+cl);
+             //  System.out.println("rw"+rw+"-cl"+cl);
                 desen.setValueAt("X", rw, cl);
 
                     }
