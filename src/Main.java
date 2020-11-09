@@ -1,10 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
+import java.awt.event.*;
+
 import java.util.Random;
 
 public class Main {
@@ -17,7 +17,8 @@ public class Main {
         public int[] bombeA = new int[bombe];
         public boolean [][] check = new boolean[gridSize][gridSize];
         public JFrame frameMeniu = new JFrame("Welcome");
-      public  JButton[][] buttons = new JButton[gridSize][gridSize];
+        public  JButton[][] buttons = new JButton[gridSize][gridSize];
+
 
         joc() {
 
@@ -32,7 +33,7 @@ public class Main {
                     return false;
                 }
             };
-           JTable desen = new JTable(model);
+            JTable desen = new JTable(model);
 
             desen.setFont(new Font("Arial", Font.BOLD, 17));
             frameMeniu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,6 +75,7 @@ public class Main {
                 for (int j = 0; j < gridSize; j++) {
                     buttons[i][j] = new JButton();
                     buttons[i][j].setBounds(centerw + i * patratel, centerh + j * patratel, patratel, patratel);
+
                     buttons[i][j].setVisible(true);
                     frameMeniu.add(buttons[i][j]);
 
@@ -98,10 +100,9 @@ public class Main {
 
                 cl = bombeA[i] % gridSize-1;
                 if (cl <0)  cl=0;
-             //  System.out.println("rw"+rw+"-cl"+cl);
                 desen.setValueAt("X", rw, cl);
 
-                    }
+            }
             for (int x = 0; x < gridSize; x++) {
                 for (int y = 0; y < gridSize; y++) {
                     int val=0;
@@ -115,7 +116,6 @@ public class Main {
                                     }
                                 }
                                 catch (Exception e){
-                                  //  System.out.println("-1");
                                 }
                             }
                         }
@@ -132,9 +132,9 @@ public class Main {
 
             for (int i = 0; i < gridSize; i++) {
                 for (int j = 0; j < gridSize; j++) {
-
                     int finalI = i;
                     int finalJ = j;
+
                     buttons[i][j].addActionListener(new ActionListener() {
 
                         @Override
@@ -159,6 +159,50 @@ public class Main {
                         }
 
                     });
+                    MouseListener mouseListener = new MouseAdapter() {
+                        public void mousePressed(MouseEvent mouseEvent) {
+                            int modifiers = mouseEvent.getModifiersEx();
+
+                            if ((modifiers & InputEvent.BUTTON3_DOWN_MASK) == InputEvent.BUTTON3_DOWN_MASK) {
+
+                                if (!buttons[finalI][finalJ].isEnabled()) {
+                                    try {
+
+
+
+
+                                        buttons[finalI][finalJ].setDisabledIcon(null);
+                                        buttons[finalI][finalJ].setIcon(null);
+
+                                    } catch (Exception ex) {
+                                        System.out.println(ex);
+                                    }
+
+
+                                    buttons[finalI][finalJ].setEnabled(true);
+                                } else
+                                {
+                                    try {
+
+
+                                        Image img = ImageIO.read(getClass().getResource("res/bomb.png"));
+                                        Image newimg = img.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+
+                                        buttons[finalI][finalJ].setDisabledIcon(new ImageIcon(newimg));
+                                        buttons[finalI][finalJ].setIcon(new ImageIcon(newimg));
+
+                                    } catch (Exception ex) {
+                                        System.out.println(ex);
+                                    }
+
+
+                                    buttons[finalI][finalJ].setEnabled(false);
+                                }
+                            }
+                        }
+                    };
+                    buttons[i][j].addMouseListener(mouseListener);
+
                 }
             }
         }
@@ -167,42 +211,43 @@ public class Main {
 
 
 
-        public void findEmptyCells(JTable desen, int i, int j) // this method is called when a cell is clicked, therefore all adjacent empty cells will be opened
-        {
 
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize && check[i][j]==false) //ie the block actually exists on the grid
+
+
+
+        public void findEmptyCells(JTable desen, int i, int j)        {
+
+            if (i >= 0 && j >= 0 && i < gridSize && j < gridSize && check[i][j]==false)
+            {
+                if (desen.getValueAt(j, i) == null)
                 {
-                    System.out.println("valoarea la i " + i + " valoarea la j " + j + "=" + desen.getValueAt(j, i));
-                    if (desen.getValueAt(j, i) == null) //if cell is empty & not a mine & not flagged
-                    {
-                        check[i][j]=true;
-                        System.out.println("gol");
-                        int finalI = i;
-                        int finalJ = j;
-                       frameMeniu.getContentPane().remove(buttons[finalI][finalJ]);
-                       frameMeniu.revalidate();
-                        frameMeniu.repaint();
-                        findEmptyCells(desen, i - 1, j); //left
-                        findEmptyCells(desen, i + 1, j); //right
-                        findEmptyCells(desen, i, j + 1); //up
-                       findEmptyCells(desen, i, j - 1); //down
-                       // findEmptyCells(desen, i - 1, j + 1); //up-left
-                       // findEmptyCells(desen, i + 1, j + 1); //up-right
-                       // findEmptyCells(desen, i - 1, j - 1); //down-left
-                       // findEmptyCells(desen, i + 1, j - 1); //down-right
+                    check[i][j]=true;
+                    int finalI = i;
+                    int finalJ = j;
+                    frameMeniu.getContentPane().remove(buttons[finalI][finalJ]);
+                    frameMeniu.revalidate();
+                    frameMeniu.repaint();
+                    findEmptyCells(desen, i - 1, j);
+                    findEmptyCells(desen, i + 1, j);
+                    findEmptyCells(desen, i, j + 1);
+                    findEmptyCells(desen, i, j - 1);
 
-                    } else if (desen.getValueAt(j, i) != null) {
-                        // /buttons[i][j].setIcon(new ImageIcon("buttonImages/but" + cells[i][j].getAdjMines() + ".png"));
-                        //  cells[i][j].setIsOpen(true); //for later, if we need to identify which cells are still unclicked
 
-                        return;
-                    }
-
-                } else {
+                } else if (desen.getValueAt(j, i) != null && desen.getValueAt(j, i) != "X") {
+                    check[i][j]=true;
+                    int finalI = i;
+                    int finalJ = j;
+                    frameMeniu.getContentPane().remove(buttons[finalI][finalJ]);
+                    frameMeniu.revalidate();
+                    frameMeniu.repaint();
                     return;
                 }
 
-                    }
+            } else {
+                return;
+            }
+
+        }
 
 
 
