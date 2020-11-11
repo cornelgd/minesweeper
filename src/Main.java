@@ -11,14 +11,14 @@ public class Main {
 
     public static class joc extends JFrame {
         final int patratel = 30;
-        final int bombe = 10;
+        final int bombe = 9;
         final int gridSize = 9;
         public int casute = gridSize * gridSize;
         public int[] bombeA = new int[bombe];
         public boolean [][] check = new boolean[gridSize][gridSize];
         public JFrame frameMeniu = new JFrame("Welcome");
         public  JButton[][] buttons = new JButton[gridSize][gridSize];
-
+        public boolean win = false;
 
         joc() {
 
@@ -140,18 +140,65 @@ public class Main {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             if (desen.getValueAt(finalJ,finalI) == "X"){
-                                JFrame frameMeniu1 = new JFrame("Boom!");
-                                frameMeniu1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                                frameMeniu1.setSize(width, height);
-                                frameMeniu1.setLayout(null);
-                                frameMeniu1.setLocationRelativeTo(null);
-                                frameMeniu1.setVisible(true);
+
+
+
+
+//show all
+                               /* for (int i = 0; i < gridSize; i++) {
+                                    for (int j = 0; j < gridSize; j++) {
+                                    buttons[i][j].setVisible(false);
+
+                                    }
+                                }
+*/
+
+
+
+
+
+                                JFrame frameMeniu2 = new JFrame("Boom");
+                                frameMeniu2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                                frameMeniu2.setSize(150, 150);
+                                frameMeniu2.setLayout(null);
+                                frameMeniu2.setLocationRelativeTo(null);
+
+                                JDialog d;
+                                d = new JDialog(frameMeniu2 , "Boom", true);
+                                JButton buttonFinal1 = new JButton("You lost!");
+                                buttonFinal1.setSize(50,25);
+                                buttonFinal1.addActionListener ( new ActionListener()
+                                {
+                                    public void actionPerformed( ActionEvent e )
+                                    {
+
+                                        System.exit(0);
+                                    }
+                                });
+
+                                d.add(buttonFinal1);
+                                d.setSize(150,150);
+                                d.setLayout( new GridBagLayout() );
+                                d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                                d.setLocationRelativeTo(null);
+                                d.setVisible(true);
+
+
+
+
+
 
                             }
+
 
                             findEmptyCells(desen,finalI,finalJ);
 
                             frameMeniu.getContentPane().remove(buttons[finalI][finalJ]);
+                            try {
+                                checkWin(desen);
+                            } catch (InterruptedException interruptedException) {
+                                interruptedException.printStackTrace();
+                            }
 
                             frameMeniu.revalidate();
                             frameMeniu.repaint();
@@ -207,13 +254,58 @@ public class Main {
             }
         }
 
+        public void checkWin(JTable desen) throws InterruptedException {
+            int nrBombeAcoperite = 0;
+            int nrCasuteDescoperite = 0;
+            for (int i = 0; i < gridSize; i++) {
+                for (int j = 0; j < gridSize; j++) {
+                    if(desen.getValueAt(j, i) == "X" && buttons[i][j].isValid() && !win)
+                    {
+                        nrBombeAcoperite++;
+
+                    }
 
 
+                    if(desen.getValueAt(j, i) != "X" && (!buttons[i][j].isValid() || !buttons[i][j].isEnabled() ) && !win)
+                    {
+                        nrCasuteDescoperite++;
+
+                    }
+
+                }
+            }
+         //   System.out.println("b="+nrBombeAcoperite+" c="+nrCasuteDescoperite);
+            if (nrBombeAcoperite==bombe && nrCasuteDescoperite == gridSize*gridSize-bombe)
+            {
+                JFrame frameMeniu1 = new JFrame("Win");
+                frameMeniu1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frameMeniu1.setSize(150, 150);
+                frameMeniu1.setLayout(null);
+                frameMeniu1.setLocationRelativeTo(null);
+                win = true;
+                JDialog d;
+                d = new JDialog(frameMeniu1 , "Win", true);
+                JButton buttonFinal = new JButton("You won!");
+                buttonFinal.setSize(50,25);
+                buttonFinal.addActionListener ( new ActionListener()
+                {
+                    public void actionPerformed( ActionEvent e )
+                    {
+
+                        System.exit(0);
+                    }
+                });
+                d.add(buttonFinal);
+                d.setSize(150,150);
+                d.setLayout( new GridBagLayout() );
+                d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                d.setLocationRelativeTo(null);
+                d.setVisible(true);
+
+            }
 
 
-
-
-
+        }
 
         public void findEmptyCells(JTable desen, int i, int j)        {
 
